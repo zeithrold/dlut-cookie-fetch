@@ -7,12 +7,34 @@
     "dev": "wrangler dev",
     "start": "wrangler dev",
     "test": "vitest",
-    "cf-typegen": "wrangler types"
+    "cf-typegen": "wrangler types",
+    "node": "ts-node",
+    "build": "tsc"
+  },
+  "dependencies": {
+    "@asteasolutions/zod-to-openapi": "^7.0.0",
+    "cookiejar": "^2.1.4",
+    "isbot": "^5.1.9",
+    "openapi3-ts": "^4.3.3",
+    "random-useragent": "^0.5.0",
+    "ua-parser-js": "^1.0.38",
+    "zod": "^3.23.8"
   },
   "devDependencies": {
+    "@antfu/eslint-config": "^2.21.1",
     "@cloudflare/vitest-pool-workers": "^0.1.0",
     "@cloudflare/workers-types": "^4.20240605.0",
+    "@eslint/js": "^9.4.0",
+    "@types/cookiejar": "^2",
+    "@types/node": "^20.14.2",
+    "@types/random-useragent": "^0",
+    "@vitest/runner": "1.3.0",
+    "@vitest/snapshot": "^1.3.0",
+    "eslint": "9.x",
+    "globals": "^15.4.0",
+    "ts-node": "^10.9.2",
     "typescript": "^5.0.4",
+    "typescript-eslint": "^7.13.0",
     "vitest": "1.3.0",
     "wrangler": "^3.60.2"
   }
