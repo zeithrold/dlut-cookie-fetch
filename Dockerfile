@@ -15,6 +15,6 @@ WORKDIR /app
 
 COPY --from=builder /workspace/dist /app/dist
 
-RUN node dist/main.js
+ENTRYPOINT node dist/msw.js
 
 EXPOSE 3000
