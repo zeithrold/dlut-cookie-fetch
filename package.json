@@ -1,6 +1,5 @@
 {
   "name": "dlut-sso-cookie-fetch",
-  "type": "module",
   "version": "0.0.0",
   "source": "./msw/index.ts",
   "main": "./dist/msw.js",
@@ -45,5 +44,12 @@
     "typescript-eslint": "^7.13.0",
     "vitest": "1.3.0",
     "wrangler": "^3.60.2"
+  },
+  "targets": {
+    "main": {
+      "context": "node",
+      "outputFormat": "commonjs",
+      "includeNodeModules": true
+    }
   }
 }

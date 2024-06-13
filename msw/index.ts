@@ -1,3 +1,4 @@
+import process from 'node:process'
 import { HttpResponse, http } from 'msw'
 import { createServer } from '@mswjs/http-middleware'
 import { openapi, passwordLogin, swagger } from '../lib/handler'
@@ -20,9 +21,10 @@ const handler = [
 ]
 
 const server = createServer(...handler)
-server.listen(3000, () => {
+const port = process.env.PORT ? Number.parseInt(process.env.PORT) : 3000
+server.listen(port, () => {
   // eslint-disable-next-line no-console
-  console.log('Server is running on http://localhost:3000')
+  console.log(`Server is running on http://localhost:${port}`)
 })
 
 export default handler

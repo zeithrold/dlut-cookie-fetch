@@ -1,6 +1,8 @@
 import { OpenAPIRegistry, OpenApiGeneratorV3, extendZodWithOpenApi } from '@asteasolutions/zod-to-openapi'
-import { OpenApiBuilder } from 'openapi3-ts/oas30'
+import { oas30 } from 'openapi3-ts'
 import z from 'zod'
+
+const { OpenApiBuilder } = oas30
 
 extendZodWithOpenApi(z)
 
