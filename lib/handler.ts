@@ -110,6 +110,10 @@ async function handleError(url: string, text: string) {
   if (text.search('span id="errormsghide"') !== -1) {
     return errorResponse('Invalid username or password', 401)
   }
+  console.warn('Failed to login with unknown error: ', {
+    url,
+    text,
+  })
   return errorResponse('Unknown error', 500)
 }
 
