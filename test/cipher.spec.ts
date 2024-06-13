@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import * as rewritten from '../src/des'
+import * as rewritten from '../lib/des'
 import * as original from './original'
 
 // Generate a random string with given length
