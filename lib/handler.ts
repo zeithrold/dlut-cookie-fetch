@@ -74,16 +74,17 @@ function buildHeaders(userAgent: string, cookies: CookieJar) {
 function updateHeaders(
   previousUrl: string,
   location: string,
-  header: Headers,
   cookies: CookieJar,
 ): Record<string, string> {
   const previousUrlObject = new URL(previousUrl)
   const locationUrl = new URL(location)
   return {
-    ...Object.fromEntries(header.entries()),
-    Origin: previousUrlObject.origin,
-    Referer: previousUrl,
-    Cookie: cookies.getCookies(new CookieAccessInfo(
+    'Sec-Fetch-Dest': 'document',
+    'Sec-Fetch-Mode': 'navigate',
+    'Sec-Fetch-Site': 'same-origin',
+    'Origin': previousUrlObject.origin,
+    'Referer': previousUrl,
+    'Cookie': cookies.getCookies(new CookieAccessInfo(
       locationUrl.hostname,
       locationUrl.pathname,
     )).map(cookie => cookie.toValueString()).join('; '),
@@ -95,14 +96,14 @@ async function handleRedirect(response: Response, cookies: CookieJar) {
   if (!location) {
     return response
   }
-  const setCookies = response.headers.getAll('Set-Cookie')
+  const setCookies = response.headers.getSetCookie()
   cookies.setCookies(setCookies)
-  const headers = updateHeaders(response.url, location, response.headers, cookies)
+  const headers = updateHeaders(response.url, location, cookies)
   const request = new Request(location, {
     headers,
     redirect: 'manual',
   })
-  return handleRedirect(await fetch(request) as unknown as Response, cookies)
+  return handleRedirect(await fetch(request), cookies)
 }
 
 async function handleError(url: string, text: string) {
@@ -127,7 +128,7 @@ async function fetchCookie(username: string, password: string, options?: FetchCo
     headers,
     redirect: 'manual',
   })
-  const loginResponse = await handleRedirect(await fetch(loginRequest) as unknown as Response, cookies)
+  const loginResponse = await handleRedirect(await fetch(loginRequest), cookies)
   if (new URL(loginResponse.url).origin !== new URL(DLUT_PORTAL_ENDPOINT).origin) {
     return handleError(loginResponse.url, await loginResponse.text())
   }
@@ -158,7 +159,7 @@ async function validate(request: Request): Promise<{ error: Response, data: null
   }
 }
 
-async function passwordLogin(request: Request, env: Env, ctx: ExecutionContext) {
+async function passwordLogin(request: Request) {
   const { error, data } = await validate(request)
   if (error) {
     return error
@@ -169,10 +170,17 @@ async function passwordLogin(request: Request, env: Env, ctx: ExecutionContext) 
     userAgent = getRandomUA(value => !isbot(value.userAgent))!
   }
   const { username, password } = data
-  return await fetchCookie(username, password, { userAgent })
+  try {
+    const result = await fetchCookie(username, password, { userAgent })
+    return result
+  }
+  catch (e) {
+    console.error(e)
+    return errorResponse('Internal Server Error', 500)
+  }
 }
 
-async function openapi(request: Request, env: Env, ctx: ExecutionContext) {
+async function openapi(_: Request) {
   return new Response(
     OPENAPI_DEFINITIONS,
     {
@@ -183,7 +191,7 @@ async function openapi(request: Request, env: Env, ctx: ExecutionContext) {
   )
 }
 
-async function swagger(request: Request, env: Env, ctx: ExecutionContext) {
+async function swagger(_: Request) {
   return new Response(
     SWAGGER_HTML,
     {
@@ -194,21 +202,27 @@ async function swagger(request: Request, env: Env, ctx: ExecutionContext) {
   )
 }
 
-export default {
-  async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
-    const url = new URL(request.url)
-    switch (url.pathname) {
-      case '/':
-        url.pathname = '/docs'
-        return Response.redirect(url.toString(), 302)
-      case '/password':
-        return await passwordLogin(request, env, ctx)
-      case '/openapi.json':
-        return await openapi(request, env, ctx)
-      case '/docs':
-        return await swagger(request, env, ctx)
-      default:
-        return errorResponse('Not Found', 404)
-    }
-  },
+async function handler(request: Request) {
+  const url = new URL(request.url)
+  switch (url.pathname) {
+    case '/':
+      url.pathname = '/docs'
+      return Response.redirect(url.toString(), 302)
+    case '/password':
+      return await passwordLogin(request)
+    case '/openapi.json':
+      return await openapi(request)
+    case '/docs':
+      return await swagger(request)
+    default:
+      return errorResponse('Not Found', 404)
+  }
+}
+
+export default handler
+export {
+  swagger,
+  openapi,
+  handler,
+  passwordLogin,
 }
