@@ -1,5 +1,5 @@
 {
-  "name": "dlut-cookie-fetch",
+  "name": "dlut-sso-cookie-fetch",
   "type": "module",
   "version": "0.0.0",
   "source": "./msw/index.ts",

@@ -3540,9 +3540,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dlut-cookie-fetch@workspace:.":
+"dlut-sso-cookie-fetch@workspace:.":
   version: 0.0.0-use.local
-  resolution: "dlut-cookie-fetch@workspace:."
+  resolution: "dlut-sso-cookie-fetch@workspace:."
   dependencies:
     "@antfu/eslint-config": "npm:^2.21.1"
     "@asteasolutions/zod-to-openapi": "npm:^7.0.0"
