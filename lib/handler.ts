@@ -110,6 +110,9 @@ async function handleError(url: string, text: string) {
   if (text.search('span id="errormsghide"') !== -1) {
     return errorResponse('Invalid username or password', 401)
   }
+  if (text.search('抱歉！您的请求出现了异常，请稍后再试。') !== -1) {
+    return errorResponse('Server rejected your request, try again later.', 400)
+  }
   console.warn('Failed to login with unknown error: ', {
     url,
     text,
